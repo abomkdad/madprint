@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>MAD Parfumeur - Precision Editor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&family=Playfair+Display:wght@400;700&family=Heebo:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --theme-color: #D4AF37;
+            --bg-body: #2c3e50;
+            --sidebar-width: 280px;
+        }
+
+        @page { size: A4; margin: 0; }
+        
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--bg-body);
+            font-family: 'Assistant', sans-serif;
+            display: flex; height: 100vh; overflow: hidden;
+        }
+
+        /* --- الشريط الجانبي --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: #1e1e1e; color: #fff;
+            padding: 20px; overflow-y: auto;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.5);
+            display: flex; flex-direction: column; gap: 20px;
+            z-index: 1000;
+        }
+
+        .section-title {
+            font-size: 14px; color: var(--theme-color); text-transform: uppercase;
+            border-bottom: 1px solid #444; padding-bottom: 5px; margin-bottom: 10px; font-weight: bold;
+        }
+
+        .control-row { margin-bottom: 15px; }
+        .label { display: flex; justify-content: space-between; font-size: 12px; color: #ccc; margin-bottom: 5px; }
+        
+        /* Sliders styling */
+        input[type="range"] {
+            width: 100%; height: 5px; border-radius: 5px; background: #444; outline: none; -webkit-appearance: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 15px; height: 15px; border-radius: 50%; background: var(--theme-color); cursor: pointer;
+        }
+
+        /* Buttons */
+        .btn-group { display: flex; gap: 5px; }
+        .btn-icon {
+            flex: 1; background: #333; color: white; border: 1px solid #444;
+            padding: 8px; cursor: pointer; border-radius: 4px; transition: 0.2s;
+        }
+        .btn-icon:hover { background: var(--theme-color); color: black; }
+        
+        .btn-main {
+            width: 100%; padding: 12px; background: var(--theme-color); color: black;
+            border: none; font-weight: bold; cursor: pointer; border-radius: 5px; margin-top: 10px;
+        }
+        .btn-upload {
+            background: #333; color: #fff; border: 1px dashed #666; width: 100%; padding: 10px;
+            cursor: pointer; text-align: center; font-size: 13px; display: block; border-radius: 4px;
+        }
+        .btn-upload:hover { border-color: var(--theme-color); color: var(--theme-color); }
+
+        /* --- منطقة العمل --- */
+        .workspace {
+            flex-grow: 1; background: #2c3e50;
+            display: flex; justify-content: center; align-items: flex-start;
+            padding: 40px; overflow-y: auto;
+        }
+
+        .a4-page {
+            width: 210mm; min-height: 296mm;
+            background-color: white; position: relative;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            display: flex; flex-direction: column;
+            padding: 20mm; box-sizing: border-box;
+        }
+
+        /* --- العناصر --- */
+        .logo-container { margin-bottom: 20px; display: flex; justify-content: center; }
+        .logo-img { max-width: 100%; display: block; } /* الحجم يتحكم به الـ Container */
+
+        /* الختم */
+        #stamp-wrapper {
+            position: absolute;
+            top: 75%; left: 10%; /* موقع افتراضي */
+            width: 150px; /* حجم افتراضي */
+            cursor: grab;
+            z-index: 100;
+            user-select: none;
+        }
+        #stamp-wrapper img { width: 100%; pointer-events: none; }
+        #stamp-wrapper:active { cursor: grabbing; border: 1px dashed #ccc; }
+
+        /* المحرر */
+        [contenteditable="true"]:hover { outline: 1px dashed #ddd; }
+        [contenteditable="true"]:focus { outline: none; }
+
+        /* الإطار الذهبي */
+        .border-frame {
+            position: absolute; top: 10mm; left: 10mm; right: 10mm; bottom: 10mm;
+            border: 2px solid var(--theme-color); pointer-events: none;
+        }
+
+        /* الطباعة */
+        @media print {
+            body { background: white; height: auto; display: block; overflow: visible; }
+            .sidebar { display: none; }
+            .workspace { padding: 0; display: block; }
+            .a4-page { margin: 0; box-shadow: none; width: 100%; height: 100%; page-break-after: avoid; }
+            #stamp-wrapper { border: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div style="text-align: center; margin-bottom: 10px;">
+            <h2 style="margin:0; color:white;">لوحة التحكم</h2>
+        </div>
+
+        <button class="btn-main" onclick="window.print()"><i class="fas fa-print"></i> طباعة / حفظ PDF</button>
+
+        <div>
+            <div class="section-title">🖼️ اللوجو (الشعار)</div>
+            <label class="btn-upload">
+                <i class="fas fa-upload"></i> رفع صورة اللوجو
+                <input type="file" hidden onchange="loadImage(this, 'mainLogo')">
+            </label>
+            
+            <div class="control-row">
+                <div class="label"><span>الحجم</span> <span id="logoSizeVal">200px</span></div>
+                <input type="range" min="50" max="400" value="200" oninput="resizeLogo(this.value)">
+            </div>
+
+            <div class="control-row">
+                <div class="label">المحاذاة (المكان)</div>
+                <div class="btn-group">
+                    <button class="btn-icon" onclick="alignLogo('flex-start')"><i class="fas fa-align-right"></i> يمين</button>
+                    <button class="btn-icon" onclick="alignLogo('center')"><i class="fas fa-align-center"></i> وسط</button>
+                    <button class="btn-icon" onclick="alignLogo('flex-end')"><i class="fas fa-align-left"></i> يسار</button>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="section-title">✒️ الختم والتوقيع</div>
+            <label class="btn-upload">
+                <i class="fas fa-upload"></i> رفع الختم
+                <input type="file" hidden onchange="loadImage(this, 'stampImg', true)">
+            </label>
+
+            <div class="control-row">
+                <div class="label"><span>الحجم</span> <span id="stampSizeVal">150px</span></div>
+                <input type="range" min="50" max="300" value="150" oninput="resizeStamp(this.value)">
+            </div>
+
+            <div class="control-row">
+                <div class="label">تحريك عمودي (فوق/تحت)</div>
+                <input type="range" min="0" max="1000" value="700" oninput="moveStampY(this.value)">
+            </div>
+            
+            <div class="control-row">
+                <div class="label">تحريك أفقي (يمين/يسار)</div>
+                <input type="range" min="0" max="600" value="50" oninput="moveStampX(this.value)">
+            </div>
+
+            <div class="control-row">
+                <div class="label">شفافية الختم</div>
+                <input type="range" min="0.1" max="1" step="0.1" value="0.9" oninput="opacityStamp(this.value)">
+            </div>
+        </div>
+
+        <div>
+            <div class="section-title">🎨 المظهر العام</div>
+            <div class="control-row">
+                <div class="label">لون الهوية</div>
+                <input type="color" style="width:100%; height:30px; border:none;" value="#D4AF37" oninput="document.documentElement.style.setProperty('--theme-color', this.value)">
+            </div>
+        </div>
+    </div>
+
+    <div class="workspace">
+        <div class="a4-page">
+            <div class="border-frame"></div>
+
+            <div id="logoContainer" class="logo-container">
+                <img id="mainLogo" src="logo.png" class="logo-img" style="width: 200px;" alt="LOGO" onerror="this.src='https://via.placeholder.com/200x80?text=MAD+LOGO'">
+            </div>
+
+            <div id="stamp-wrapper" onmousedown="startDrag(event)">
+                <img id="stampImg" src="" alt="Stamp" style="display: none;">
+            </div>
+
+            <div contenteditable="true" style="outline: none; flex-grow: 1;">
+                <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 30px;">
+                    <div><strong>תאריך:</strong> 07 ינואר 2026</div>
+                    <div><strong>סימוכין:</strong> LEG-01/26</div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <strong>לכבוד:</strong><br>
+                    הנהלת קניון מול החוף (Village)<br>
+                    חדרה<br>
+                    (באמצעות המייל)
+                </div>
+
+                <div style="text-align: center; text-decoration: underline; font-weight: bold; font-size: 18px; margin-bottom: 25px;">
+                    הנדון: הבהרה והשלמת פרטים - בקשה להעברת זכויות בנכס
+                </div>
+
+                <div style="text-align: justify; line-height: 1.6;">
+                    <p><strong>א.ג.נ,</strong></p>
+                    <p>בהמשך לפנייתכם ובמענה לבקשת ההבהרה מטעמכם, הרינו להשיבכם כדלקמן בנוגע לבקשה להעברת הזכויות וההתחייבויות על פי חוזה השכירות הקיים:</p>
+                    <p>1. <strong>רציפות עסקית:</strong> העברת הזכויות וההתחייבויות מתבצעת מטעמים ארגוניים וניהוליים פנימיים. המהלך נועד להבטיח את המשך ניהולו והפעלתו של העסק במושכר, ללא כל שינוי באופי הפעילות או באופן התפעול. ההעברה נעשית בהסכמת כל הצדדים להבטחת רציפות מלאה.</p>
+                    <p>2. <strong>הצד הנכנס:</strong> הגב' <strong>סמאח מחאמיד</strong>, מקבלת על עצמה את מלוא ההתחייבויות הכספיות והחוזיות בהתאם לחוזה השכירות הקיים.</p>
+                    <p>3. <strong>ביטחונות:</strong> הצד הנכנס נכון להעמיד ביטחונות חלופיים ו/או זהים לאלו הקיימים, בהתאם לדרישות המקובלות של הנהלת הקניון ובכפוף להנחיותיכם.</p>
+                    <p>נודה לאישורכם העקרוני להמשך הטיפול בבקשה.</p>
+                </div>
+
+                <div style="margin-top: 50px;">
+                    <p>בכבוד רב,</p>
+                    <p style="font-weight: bold;">מאד פרפיום בע"מ</p>
+                    <p>ח.פ 515456093</p>
+                    <br>
+                    <div style="border-top: 1px solid #000; width: 200px; padding-top: 5px;">
+                        חתימה וחותמת החברה
+                    </div>
+                </div>
+            </div>
+
+            <div style="border-top: 1px solid var(--theme-color); text-align: center; padding-top: 10px; margin-top: auto; font-size: 11px; color: #555;" contenteditable="true">
+                <strong>MAD PARFUMEUR LTD</strong> | 515456093 | www.madperfume.co.il<br>
+                שירות לקוחות: *9935 | Email: info@madperfume.co.il
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- دوال اللوجو ---
+        function resizeLogo(val) {
+            document.getElementById('mainLogo').style.width = val + 'px';
+            document.getElementById('logoSizeVal').innerText = val + 'px';
+        }
+        function alignLogo(align) {
+            document.getElementById('logoContainer').style.justifyContent = align;
+        }
+
+        // --- دوال الختم ---
+        const stampWrapper = document.getElementById('stampWrapper'); // Fixed variable name issue
+        
+        function resizeStamp(val) {
+            document.getElementById('stamp-wrapper').style.width = val + 'px';
+            document.getElementById('stampSizeVal').innerText = val + 'px';
+        }
+        function moveStampY(val) {
+            document.getElementById('stamp-wrapper').style.top = val + 'px';
+        }
+        function moveStampX(val) {
+            document.getElementById('stamp-wrapper').style.left = val + 'px';
+        }
+        function opacityStamp(val) {
+            document.getElementById('stamp-wrapper').style.opacity = val;
+        }
+
+        // --- تحميل الصور ---
+        function loadImage(input, id, showWrapper = false) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var img = document.getElementById(id);
+                    img.src = e.target.result;
+                    img.style.display = 'block';
+                    if(showWrapper) document.getElementById('stamp-wrapper').style.display = 'block';
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // --- سحب وإفلات الختم (Drag & Drop Logic) ---
+        let isDragging = false;
+        let startX, startY, initialLeft, initialTop;
+        const elm = document.getElementById('stamp-wrapper');
+
+        function startDrag(e) {
+            e.preventDefault(); // منع سلوك سحب الصورة الافتراضي للمتصفح
+            isDragging = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            initialLeft = elm.offsetLeft;
+            initialTop = elm.offsetTop;
+            elm.style.cursor = "grabbing";
+            
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', stopDrag);
+        }
+
+        function drag(e) {
+            if (!isDragging) return;
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+            elm.style.left = (initialLeft + dx) + "px";
+            elm.style.top = (initialTop + dy) + "px";
+        }
+
+        function stopDrag() {
+            isDragging = false;
+            elm.style.cursor = "grab";
+            document.removeEventListener('mousemove', drag);
+            document.removeEventListener('mouseup', stopDrag);
+        }
+    </script>
+</body>
+</html>
