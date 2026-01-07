@@ -2,14 +2,13 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>MAD System - Ultimate Templates</title>
-    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&family=Playfair+Display:wght@400;700&family=Heebo:wght@300;400;700&family=Rubik:wght@400;700&display=swap" rel="stylesheet">
+    <title>MAD System - Online</title>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&family=Playfair+Display:wght@400;700&family=Heebo:wght@300;400;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
     <style>
-        /* --- المتغيرات العامة --- */
         :root {
-            --theme-color: #D4AF37; /* اللون الأساسي */
+            --theme-color: #D4AF37;
             --bg-sidebar: #1a1a1a;
             --bg-workspace: #f4f4f4;
             --font-main: 'Assistant', sans-serif;
@@ -25,102 +24,49 @@
             display: flex; height: 100vh; overflow: hidden;
         }
 
-        /* --- الشريط الجانبي (لوحة التحكم) --- */
+        /* Sidebar */
         .sidebar {
             width: var(--sidebar-width);
             background: var(--bg-sidebar); color: #fff;
             padding: 20px; overflow-y: auto;
             display: flex; flex-direction: column; gap: 20px;
-            box-shadow: -2px 0 10px rgba(0,0,0,0.2);
-            z-index: 1000;
+            box-shadow: -2px 0 10px rgba(0,0,0,0.2); z-index: 1000;
         }
-
-        .panel-section {
-            background: #252525; padding: 15px; border-radius: 8px; border: 1px solid #333;
-        }
-        .panel-title {
-            font-size: 13px; color: var(--theme-color); font-weight: bold;
-            text-transform: uppercase; margin-bottom: 10px; border-bottom: 1px solid #444; padding-bottom: 5px;
-        }
-
-        /* عناصر التحكم */
-        .btn-action {
-            width: 100%; padding: 12px; border: none; border-radius: 5px;
-            cursor: pointer; font-weight: bold; font-family: inherit; margin-bottom: 10px;
-            display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s;
-        }
+        .panel-section { background: #252525; padding: 15px; border-radius: 8px; border: 1px solid #333; }
+        .panel-title { font-size: 13px; color: var(--theme-color); font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #444; padding-bottom: 5px; }
+        .btn-action { width: 100%; padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
         .btn-print { background: var(--theme-color); color: #000; }
-        .btn-print:hover { filter: brightness(1.1); }
-        
-        .btn-upload {
-            background: #333; color: #ccc; border: 1px dashed #555;
-            font-size: 12px; padding: 8px;
-        }
-        .btn-upload:hover { border-color: var(--theme-color); color: var(--theme-color); }
+        .btn-upload { background: #333; color: #ccc; border: 1px dashed #555; font-size: 12px; padding: 8px; }
+        select, input[type="range"] { width: 100%; margin-bottom: 5px; background: #333; color: white; border: 1px solid #444; padding: 5px; }
 
-        select, input[type="range"] { width: 100%; margin-bottom: 5px; background: #333; color: white; border: 1px solid #444; border-radius: 4px; padding: 5px; }
-        input[type="range"] { height: 4px; -webkit-appearance: none; background: #444; }
-        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; background: var(--theme-color); border-radius: 50%; cursor: pointer; }
+        /* Workspace */
+        .workspace { flex-grow: 1; display: flex; justify-content: center; padding: 40px; overflow-y: auto; }
+        .a4-page { width: 210mm; min-height: 296mm; background-color: white; position: relative; box-shadow: 0 0 25px rgba(0,0,0,0.1); padding: 20mm; box-sizing: border-box; display: flex; flex-direction: column; }
 
-        /* --- منطقة العمل --- */
-        .workspace {
-            flex-grow: 1; display: flex; justify-content: center; padding: 40px; overflow-y: auto;
-        }
-
-        .a4-page {
-            width: 210mm; min-height: 296mm;
-            background-color: white;
-            position: relative;
-            box-shadow: 0 0 25px rgba(0,0,0,0.1);
-            padding: 20mm; box-sizing: border-box;
-            display: flex; flex-direction: column;
-        }
-
-        /* --- العناصر الثابتة (Header/Footer) --- */
+        /* Elements */
         .header-section { margin-bottom: 20px; text-align: center; }
-        .logo-img { max-width: 100%; display: block; margin: 0 auto; } /* التحكم بالحجم عبر الحاوية */
+        .logo-img { max-width: 100%; display: block; margin: 0 auto; }
         
-        .footer-section {
-            margin-top: auto; padding-top: 15px;
-            border-top: 1px solid var(--theme-color);
-            text-align: center; font-size: 11px; color: #555;
-        }
-
-        /* --- الختم المتحرك --- */
-        #stamp-wrapper {
-            position: absolute; width: 150px; cursor: grab; z-index: 50;
-            top: 75%; left: 15%; /* Default */
-        }
+        /* الختم مع جعل الخلفية البيضاء شفافة */
+        #stamp-wrapper { position: absolute; width: 200px; cursor: grab; z-index: 50; top: 78%; left: 10%; mix-blend-mode: multiply; }
         #stamp-wrapper img { width: 100%; pointer-events: none; }
-        #stamp-wrapper:active { cursor: grabbing; }
-
-        /* --- الجداول وتنسيقات القوالب --- */
+        
+        .footer-section { margin-top: auto; padding-top: 15px; border-top: 1px solid var(--theme-color); text-align: center; font-size: 11px; color: #555; }
+        
+        /* Tables & Content */
         .template-content { flex-grow: 1; outline: none; }
-        
         table.mad-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px; }
-        table.mad-table th { background: #f8f8f8; border-bottom: 2px solid var(--theme-color); padding: 10px; text-align: right; font-weight: bold; }
+        table.mad-table th { background: #f8f8f8; border-bottom: 2px solid var(--theme-color); padding: 10px; }
         table.mad-table td { border-bottom: 1px solid #eee; padding: 10px; }
-        table.mad-table tr:last-child td { border-bottom: none; }
-
-        .invoice-summary { display: flex; justify-content: flex-end; margin-top: 20px; }
-        .invoice-box { background: #f9f9f9; padding: 15px; border-radius: 5px; width: 200px; }
         
-        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; font-size: 14px; }
-        .info-item { border-bottom: 1px solid #eee; padding-bottom: 5px; }
-
-        /* الإطار (يظهر فقط في بعض الثيمات) */
-        .border-frame {
-            position: absolute; top: 10mm; left: 10mm; right: 10mm; bottom: 10mm;
-            border: 2px solid var(--theme-color); pointer-events: none; display: none;
-        }
+        .border-frame { position: absolute; top: 10mm; left: 10mm; right: 10mm; bottom: 10mm; border: 2px solid var(--theme-color); pointer-events: none; display: none; }
         .show-frame .border-frame { display: block; }
 
-        /* --- الطباعة --- */
         @media print {
             body { background: white; display: block; }
             .sidebar { display: none; }
             .workspace { padding: 0; margin: 0; }
-            .a4-page { box-shadow: none; width: 100%; height: 100%; margin: 0; page-break-after: avoid; }
+            .a4-page { box-shadow: none; width: 100%; height: 100%; margin: 0; }
         }
     </style>
 </head>
@@ -129,61 +75,44 @@
     <div class="sidebar">
         <div style="text-align: center; color: white;">
             <h2 style="margin: 0;">MAD System</h2>
-            <small style="opacity: 0.6;">Ultimate Template Engine</small>
         </div>
         <hr style="border-color: #333; width: 100%;">
 
-        <button class="btn-action btn-print" onclick="window.print()">
-            <i class="fas fa-print"></i> طباعة / PDF
-        </button>
+        <button class="btn-action btn-print" onclick="window.print()">🖨️ طباعة / PDF</button>
 
         <div class="panel-section">
-            <div class="panel-title">1. نوع المستند (Templates)</div>
+            <div class="panel-title">1. القوالב (Templates)</div>
             <select id="templateSelect" onchange="loadTemplate(this.value)">
-                <option value="letter">📄 رسالة رسمية (الافتراضي)</option>
+                <option value="letter">📄 رسالة رسمية</option>
                 <option value="invoice">💰 فاتورة / عرض سعر</option>
-                <option value="table">📋 جدول بيانات / جرد</option>
-                <option value="legal">⚖️ تعهد قانوني / عقد</option>
+                <option value="table">📋 جدول بيانات</option>
+                <option value="legal">⚖️ تعهد قانوني</option>
                 <option value="memo">📝 مذكرة داخلية</option>
-                <option value="certificate">🏆 شهادة / تقدير</option>
-                <option value="delivery">📦 نموذج استلام</option>
             </select>
         </div>
 
         <div class="panel-section">
-            <div class="panel-title">2. التصميم (Theme)</div>
+            <div class="panel-title">2. التصميم</div>
             <div style="display: flex; gap: 5px; margin-bottom: 10px;">
-                <button onclick="setTheme('#D4AF37', true)" style="flex:1; height:30px; background:#D4AF37; border:none; cursor:pointer;" title="ذهبي"></button>
-                <button onclick="setTheme('#000000', false)" style="flex:1; height:30px; background:#000000; border:none; cursor:pointer;" title="أسود"></button>
-                <button onclick="setTheme('#1a5f7a', false)" style="flex:1; height:30px; background:#1a5f7a; border:none; cursor:pointer;" title="أزرق شركات"></button>
-                <button onclick="setTheme('#555555', true)" style="flex:1; height:30px; background:#555555; border:none; cursor:pointer;" title="رمادي"></button>
+                <button onclick="setTheme('#D4AF37')" style="flex:1; height:30px; background:#D4AF37; border:none; cursor:pointer;"></button>
+                <button onclick="setTheme('#000000')" style="flex:1; height:30px; background:#000000; border:none; cursor:pointer;"></button>
+                <button onclick="setTheme('#1a5f7a')" style="flex:1; height:30px; background:#1a5f7a; border:none; cursor:pointer;"></button>
             </div>
-            <label style="font-size:12px; display:block; margin-bottom:5px;">إظهار الإطار:</label>
-            <select onchange="toggleFrame(this.value)">
-                <option value="yes">نعم (إطار كامل)</option>
-                <option value="no">لا (بدون إطار)</option>
-            </select>
+            <label style="font-size:12px;">إطار:</label>
+            <select onchange="toggleFrame(this.value)"><option value="yes">نعم</option><option value="no">لا</option></select>
         </div>
 
         <div class="panel-section">
-            <div class="panel-title">3. اللوجو والختم</div>
+            <div class="panel-title">3. التحكم بالحجم</div>
+            <div style="font-size:11px; color:#aaa;">حجم اللوجو</div>
+            <input type="range" min="100" max="400" value="200" oninput="resizeEl('logoContainer', this.value, 'width')">
+            <div style="font-size:11px; color:#aaa;">حجم الختم</div>
+            <input type="range" min="50" max="400" value="200" oninput="resizeEl('stamp-wrapper', this.value, 'width')">
             
-            <label class="btn-action btn-upload">
-                <i class="fas fa-upload"></i> رفع اللوجو
+            <label class="btn-action btn-upload" style="margin-top:10px;">
+                <i class="fas fa-upload"></i> تغيير اللوجو
                 <input type="file" hidden onchange="loadImage(this, 'mainLogo')">
             </label>
-            <div style="display:flex; justify-content: space-between; font-size:11px; color:#aaa;"><span>حجم اللوجو</span></div>
-            <input type="range" min="100" max="400" value="200" oninput="resizeEl('logoContainer', this.value, 'width')">
-
-            <label class="btn-action btn-upload" style="margin-top:10px;">
-                <i class="fas fa-stamp"></i> رفع الختم
-                <input type="file" hidden onchange="loadImage(this, 'stampImg', true)">
-            </label>
-            <div style="display:flex; justify-content: space-between; font-size:11px; color:#aaa;"><span>حجم الختم</span></div>
-            <input type="range" min="50" max="300" value="150" oninput="resizeEl('stamp-wrapper', this.value, 'width')">
-            
-            <div style="display:flex; justify-content: space-between; font-size:11px; color:#aaa;"><span>شفافية الختم</span></div>
-            <input type="range" min="0.1" max="1" step="0.1" value="0.9" oninput="resizeEl('stamp-wrapper', this.value, 'opacity')">
         </div>
     </div>
 
@@ -193,12 +122,12 @@
 
             <div class="header-section">
                 <div id="logoContainer" style="width: 200px; margin: 0 auto;">
-                    <img id="mainLogo" src="logo.png" class="logo-img" alt="LOGO" onerror="this.src='https://via.placeholder.com/200x80?text=MAD+PARFUMEUR'">
+                    <img id="mainLogo" src="logo.jpg" class="logo-img" alt="LOGO" onerror="this.src='https://via.placeholder.com/200x80?text=MAD+LOGO'">
                 </div>
             </div>
 
             <div id="stamp-wrapper" onmousedown="startDrag(event)">
-                <img id="stampImg" src="" alt="" style="display: none;">
+                <img id="stampImg" src="signther.jpg" alt="Signature">
             </div>
 
             <div id="mainContent" class="template-content" contenteditable="true">
@@ -212,9 +141,8 @@
     </div>
 
     <script>
-        // --- 1. قاعدة بيانات القوالب (Templates DB) ---
+        // Templates Data
         const templates = {
-            // القالب 1: الرسالة الرسمية (النص الحالي)
             letter: `
                 <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 30px;">
                     <div><strong>תאריך:</strong> 07 ינואר 2026</div>
@@ -231,216 +159,68 @@
                     <p>בהמשך לפנייתכם, הרינו להשיבכם כדלקמן בנוגע לבקשה להעברת הזכויות בחוזה השכירות:</p>
                     <p>1. <strong>רציפות עסקית:</strong> העברת הזכויות נעשית מטעמים ארגוניים פנימיים להבטחת המשך הפעלת העסק במושכר ללא שינוי באופי הפעילות.</p>
                     <p>2. <strong>הצד הנכנס:</strong> הגב' <strong>סמאח מחאמיד</strong> מקבלת על עצמה את מלוא ההתחייבויות.</p>
-                    <p>3. <strong>ביטחונות:</strong> נכונות להעמיד ביטחונות חלופיים בהתאם לדרישות.</p>
                     <p>נודה לאישורכם.</p>
                 </div>
                 <div style="margin-top: 40px;">
                     <p>בכבוד רב,</p><p style="font-weight: bold;">מאד פרפיום בע"מ</p>
-                    <div style="border-top: 1px solid #000; width: 200px; margin-top: 40px; padding-top: 5px;">חתימה וחותמת החברה</div>
+                    <div style="border-top: 1px solid #000; width: 200px; margin-top: 50px; padding-top: 5px;">חתימה וחותמת החברה</div>
                 </div>
             `,
-
-            // القالب 2: فاتورة / عرض سعر
             invoice: `
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #eee; padding-bottom: 10px;">
-                    <h1 style="margin:0; font-size: 24px;">הצעת מחיר / Price Quote</h1>
-                    <div style="text-align: left;">מספר: <strong>#2026-1001</strong><br>תאריך: 07/01/2026</div>
+                <div style="display: flex; justify-content: space-between; border-bottom: 2px solid #eee; padding-bottom: 10px;">
+                    <h1 style="margin:0;">הצעת מחיר / Invoice</h1>
+                    <div>#2026-1001 <br> 07/01/2026</div>
                 </div>
-                <div class="info-grid">
-                    <div><strong>לכבוד:</strong><br>שם הלקוח: ________________<br>ח.פ/ת.ז: ________________</div>
-                    <div><strong>פרטי תשלום:</strong><br>תוקף ההצעה: 14 יום<br>תנאי תשלום: שוטף + 30</div>
-                </div>
+                <div style="margin-top:20px;"><strong>לכבוד:</strong> שם הלקוח...</div>
                 <table class="mad-table">
-                    <thead><tr><th>תיאור פריט (Description)</th><th>כמות (Qty)</th><th>מחיר יח' (Price)</th><th>סה"כ (Total)</th></tr></thead>
+                    <thead><tr><th>תיאור</th><th>כמות</th><th>מחיר</th><th>סה"כ</th></tr></thead>
                     <tbody>
-                        <tr><td>בושם נישה - MAD Signature</td><td>10</td><td>₪ 250</td><td>₪ 2,500</td></tr>
-                        <tr><td>מפיץ ריח יוקרתי (גדול)</td><td>5</td><td>₪ 120</td><td>₪ 600</td></tr>
-                        <tr><td>מארז דוגמיות VIP</td><td>20</td><td>₪ 0</td><td>₪ 0</td></tr>
+                        <tr><td>MAD Signature Perfume</td><td>10</td><td>250</td><td>2,500</td></tr>
+                        <tr><td>Room Diffuser</td><td>5</td><td>120</td><td>600</td></tr>
                     </tbody>
                 </table>
-                <div class="invoice-summary">
-                    <div class="invoice-box">
-                        <div style="display:flex; justify-content:space-between;"><span>סה"כ לפני מע"מ:</span><strong>₪ 3,100</strong></div>
-                        <div style="display:flex; justify-content:space-between;"><span>מע"מ (17%):</span><strong>₪ 527</strong></div>
-                        <div style="border-top:1px solid #ccc; margin-top:5px; padding-top:5px; display:flex; justify-content:space-between; font-size:16px;"><span>סה"כ לתשלום:</span><strong>₪ 3,627</strong></div>
-                    </div>
-                </div>
-            `,
-
-            // القالب 3: جدول بيانات
-            table: `
-                <h2 style="text-align: center; margin-bottom: 20px;">דוח מלאי / רשימת סניפים</h2>
-                <div style="margin-bottom: 15px;"><strong>תאריך עדכון:</strong> 07/01/2026</div>
-                <table class="mad-table">
-                    <thead><tr><th>קוד פריט</th><th>שם מוצר / סניף</th><th>קטגוריה</th><th>סטטוס / מלאי</th><th>הערות</th></tr></thead>
-                    <tbody>
-                        <tr><td>MAD-001</td><td>קניון מול החוף - חדרה</td><td>סניף ראשי</td><td>פעיל</td><td>חוזה בתוקף</td></tr>
-                        <tr><td>PRF-102</td><td>Niche Perfume X1</td><td>בשמים</td><td>54 יח'</td><td>מלאי נמוך</td></tr>
-                        <tr><td>PRF-105</td><td>Gold Edition 100ml</td><td>בשמים</td><td>120 יח'</td><td>במלאי</td></tr>
-                        <tr><td>ACC-002</td><td>בקבוק טסטר</td><td>ציוד</td><td>200 יח'</td><td>-</td></tr>
-                        <tr><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
-                    </tbody>
-                </table>
-            `,
-
-            // القالب 4: تعهد قانوني
-            legal: `
-                <h1 style="text-align: center; font-family: 'Playfair Display'; margin-bottom: 10px;">כתב התחייבות ושיפוי</h1>
-                <div style="text-align: center; margin-bottom: 40px;">שנערך ונחתם ביום 07 בחודש ינואר שנת 2026</div>
-                <div style="line-height: 2; text-align: justify; padding: 0 20px;">
-                    <p>אני החתום מטה, <strong>מאד פרפיום בע"מ</strong> (ח.פ 515456093), מצהיר ומתחייב בזאת כלפי <strong>הנהלת הקניון</strong> כדלקמן:</p>
-                    <ol>
-                        <li>הנני מאשר כי קראתי את כל תנאי החוזה והבנתי את תוכנם.</li>
-                        <li>אני מתחייב לשמור על הוראות הבטיחות והניהול של הנכס ללא יוצא מן הכלל.</li>
-                        <li>ידוע לי כי כתב התחייבות זה הינו בלתי חוזר ומהווה חלק בלתי נפרד מהסכם השכירות.</li>
-                        <li>בכל מקרה של הפרה, אהיה צפוי לסנקציות הקבועות בחוק ובחוזה.</li>
-                    </ol>
-                    <p style="margin-top: 30px;">ולראיה באתי על החתום:</p>
-                </div>
-                <div style="display: flex; justify-content: space-between; margin-top: 50px; padding: 0 50px;">
-                    <div style="text-align: center;">________________<br>חתימת המצהיר</div>
-                    <div style="text-align: center;">________________<br>אישור עו"ד</div>
-                </div>
-            `,
-
-            // القالب 5: مذكرة
-            memo: `
-                <div style="border: 2px solid #333; padding: 20px; border-radius: 8px; background: #fafafa;">
-                    <h2 style="margin-top: 0; border-bottom: 2px solid var(--theme-color); padding-bottom: 10px;">מזכר פנימי / MEMO</h2>
-                    <div style="display: grid; grid-template-columns: 100px 1fr; gap: 10px; margin-bottom: 20px;">
-                        <strong>אל:</strong> <span>כל עובדי הסניפים</span>
-                        <strong>מאת:</strong> <span>הנהלה ראשית</span>
-                        <strong>תאריך:</strong> <span>07/01/2026</span>
-                        <strong>הנדון:</strong> <span>עדכון נהלי פתיחת סניף</span>
-                    </div>
-                    <div style="min-height: 200px;">
-                        <p>שלום רב,</p>
-                        <p>הרינו לחדד את הנהלים בנוגע לשעות הפתיחה והסגירה של הסניפים החל מהחודש הקרוב.</p>
-                        <ul>
-                            <li>פתיחת סניף: 09:00 בדיוק.</li>
-                            <li>דוח סגירת קופה חובה לשלוח עד 22:30.</li>
-                        </ul>
-                        <p>בברכה,<br>ההנהלה</p>
-                    </div>
-                </div>
-            `,
-
-            // القالب 6: شهادة
-            certificate: `
-                <div style="border: 5px double var(--theme-color); padding: 40px; height: 100%; text-align: center; box-sizing: border-box;">
-                    <div style="font-family: 'Playfair Display'; font-size: 40px; font-weight: bold; color: var(--theme-color); margin-bottom: 20px;">Certificate of Excellence</div>
-                    <div style="font-size: 20px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 40px;">תעודת הערכה והצטיינות</div>
-                    
-                    <p>מוענקת בזאת ל- / This is presented to</p>
-                    <h1 style="font-size: 36px; margin: 20px 0; border-bottom: 1px solid #ccc; display: inline-block; padding: 0 20px;">שם העובד / הסניף</h1>
-                    
-                    <p style="margin-top: 30px; line-height: 1.6;">
-                        על תרומה יוצאת דופן, מסירות ומקצועיות<br>
-                        שהובילו להישגים מרשימים עבור רשת MAD PARFUMEUR.
-                    </p>
-                    
-                    <div style="margin-top: 60px; display: flex; justify-content: space-around;">
-                        <div>________________<br>מנכ"ל</div>
-                        <div>07/01/2026<br>תאריך</div>
-                    </div>
-                </div>
-            `,
-
-            // القالب 7: نموذج استلام
-            delivery: `
-                <h2 style="text-align: center; background: #eee; padding: 10px;">טופס מסירה / קבלת ציוד (Delivery Note)</h2>
-                <div class="info-grid" style="margin-top: 20px;">
-                    <div><strong>נמסר ל:</strong> ________________</div>
-                    <div><strong>נמסר ע"י:</strong> מחסן ראשי</div>
-                    <div><strong>יעד:</strong> סניף חדרה</div>
-                    <div><strong>תאריך:</strong> 07/01/2026</div>
-                </div>
-                <table class="mad-table">
-                    <thead><tr><th>מק"ט</th><th>תיאור פריט</th><th>כמות שנשלחה</th><th>כמות שהתקבלה</th><th>הערות</th></tr></thead>
-                    <tbody>
-                        <tr><td>___________</td><td>__________________________</td><td>_____</td><td>_____</td><td>___________</td></tr>
-                        <tr><td>___________</td><td>__________________________</td><td>_____</td><td>_____</td><td>___________</td></tr>
-                        <tr><td>___________</td><td>__________________________</td><td>_____</td><td>_____</td><td>___________</td></tr>
-                        <tr><td>___________</td><td>__________________________</td><td>_____</td><td>_____</td><td>___________</td></tr>
-                    </tbody>
-                </table>
-                <div style="margin-top: 30px;">
-                    <p><strong>אישור מקבל הסחורה:</strong></p>
-                    <p>אני מאשר כי קיבלתי את הסחורה הנ"ל במצב תקין.</p>
-                    <br>
-                    <div style="display:flex; gap: 20px;">
-                        <span>שם מלא: ____________</span>
-                        <span>חתימה: ____________</span>
-                    </div>
-                </div>
+                <div style="text-align: left; margin-top: 20px;"><h3>סה"כ לתשלום: ₪ 3,100</h3></div>
             `
         };
 
-        // --- 2. دوال التحكم ---
-        
-        // تحميل القالب
-        function loadTemplate(type) {
-            document.getElementById('mainContent').innerHTML = templates[type];
+        // Functions
+        function loadTemplate(type) { document.getElementById('mainContent').innerHTML = templates[type] || templates['letter']; }
+        function setTheme(color) { document.documentElement.style.setProperty('--theme-color', color); }
+        function toggleFrame(val) { document.getElementById('page').classList.toggle('show-frame', val === 'yes'); }
+        function resizeEl(id, val, prop) { 
+            const el = document.getElementById(id); 
+            if(prop === 'width') el.style.width = val + 'px'; 
         }
-
-        // تغيير الألوان
-        function setTheme(color, showFrame) {
-            document.documentElement.style.setProperty('--theme-color', color);
-        }
-
-        function toggleFrame(val) {
-            const page = document.getElementById('page');
-            if(val === 'yes') page.classList.add('show-frame');
-            else page.classList.remove('show-frame');
-        }
-
-        // تغيير الحجم والشفافية
-        function resizeEl(id, val, prop) {
-            const el = document.getElementById(id);
-            if(prop === 'width') el.style.width = val + 'px';
-            if(prop === 'opacity') el.style.opacity = val;
-        }
-
-        // رفع الصور
-        function loadImage(input, id, showStamp = false) {
+        function loadImage(input, id) {
             if(input.files && input.files[0]) {
-                const img = document.getElementById(id);
-                img.src = URL.createObjectURL(input.files[0]);
-                img.style.display = 'block';
-                if(showStamp) document.getElementById('stamp-wrapper').style.display = 'block';
+                document.getElementById(id).src = URL.createObjectURL(input.files[0]);
             }
         }
 
-        // --- 3. منطق السحب (Drag & Drop) ---
+        // Drag & Drop
         let isDragging = false, startX, startY, initLeft, initTop;
         const stampWrap = document.getElementById('stamp-wrapper');
-
         function startDrag(e) {
-            e.preventDefault();
-            isDragging = true;
+            e.preventDefault(); isDragging = true;
             startX = e.clientX; startY = e.clientY;
             initLeft = stampWrap.offsetLeft; initTop = stampWrap.offsetTop;
             stampWrap.style.cursor = 'grabbing';
             document.addEventListener('mousemove', doDrag);
             document.addEventListener('mouseup', stopDrag);
         }
-
         function doDrag(e) {
             if(!isDragging) return;
             stampWrap.style.left = (initLeft + e.clientX - startX) + 'px';
             stampWrap.style.top = (initTop + e.clientY - startY) + 'px';
         }
-
         function stopDrag() {
-            isDragging = false;
-            stampWrap.style.cursor = 'grab';
+            isDragging = false; stampWrap.style.cursor = 'grab';
             document.removeEventListener('mousemove', doDrag);
             document.removeEventListener('mouseup', stopDrag);
         }
 
-        // تحميل القالب الافتراضي عند البدء
+        // Init
         loadTemplate('letter');
-
     </script>
 </body>
 </html>
